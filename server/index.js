@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import fs from 'fs';
 import http from 'http';
 import { Server } from 'socket.io';
 
@@ -16,22 +17,19 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log(`User ${socket.id} connected`);
-
-  socket.on("send_message", (data) =>{
-    //broadcast to everyone on the network 
-    socket.broadcast.emit("receive_message", data)
-
+  // console.log(`User ${socket.id} connected`);
+  socket.on("log_in", (data)=>{
+    console.log(`USER ${data} with ID ${socket.id} logged in`);
   })
 
-  // socket.on('disconnect', () => {
-  //   console.log('User disconnected');
-  // });
+  socket.on("send_message", (data) => {
+    //broadcast to everyone on the network 
+    socket.broadcast.emit("receive_message", data)
+  });
 
-  // socket.on('chat message', (msg) => {
-  //   console.log('message: ' + msg);
-  //   io.emit('chat message', msg);
-  // });
+  socket.on("disconnect", ()=> {
+    console.log("User Disconnected", socket.id)
+  });
 });
 
 server.listen(3001, () => {
