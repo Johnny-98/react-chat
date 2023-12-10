@@ -1,0 +1,1 @@
+we need the socket.io-client to establish the connection between the backend and frontend in react
