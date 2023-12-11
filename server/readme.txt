@@ -10,4 +10,4 @@ Libraries:
     Socket.io - real-time communication between the server and clients
 
 How to start:
-    yarn start
+    npm start

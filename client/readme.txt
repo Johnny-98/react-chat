@@ -1,1 +1,2 @@
-we need the socket.io-client to establish the connection between the backend and frontend in react
+socket.io-client to establishes the connection between the backend and frontend in react
+react-scroll-to-bottom- manages messages scrolling
