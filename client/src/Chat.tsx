@@ -28,6 +28,7 @@ function Chat({socket, username}:chatType) {
             await socket.emit('send_message', messageData );
             //when message sends add that message to my list 
             setMessageList((list) => [...list, messageData])
+            setCurrentMessage('')
         }
     };
 
@@ -75,7 +76,7 @@ function Chat({socket, username}:chatType) {
                 <input 
                     type='text'  
                     placeholder='Type your message here...'
-                    type="text"  
+                    value={currentMessage}
                     onChange={(event) => { 
                         setCurrentMessage(event.target.value)
                     }}
