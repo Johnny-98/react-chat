@@ -1,14 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Socket } from 'socket.io-client';
-
 interface chatType {
     socket: Socket;
     username: string; 
 }
+interface Message {
+    author: string
+    message: string;
+    time: string
+}
 
-// useMemo(() => )
 function Chat({socket, username}:chatType) {
     const [currentMessage, setCurrentMessage] = useState("");
+    const [messageList, setMessageList] = useState<Message[]>([]);
 
     const sendMessage = async () => {
         if(currentMessage!== "") {
@@ -21,13 +25,15 @@ function Chat({socket, username}:chatType) {
                     new Date(Date.now()).getMinutes()
             };
             await socket.emit("send_message", messageData );
+            //when message sends add that message to my list 
+            setMessageList((list) => [...list, messageData])
         }
     };
 
     const messageListener = useMemo(() => {
-        const listener = (data: any) => {
-            console.log(data);
-            // Handle received messages here
+        const listener = (data: Message) => {
+            //get the current message and add it to an array 
+            setMessageList((list) => [...list, data])
         };
         return listener;
     }, []);
@@ -41,17 +47,37 @@ function Chat({socket, username}:chatType) {
         };
     }, [socket, messageListener]);
 
-
     return (
-        <div>
-            <div className='chat-head'>Live chat
+        <div className="chat-window">
+            <div className='chat-header'>
+                <p>Live chat</p>
             </div>
             <div className='chat-body'>
+            {/* accessisng the data just like vue  */}
+            {messageList.map((messageContent)=>{
+                return <div className="message" id={username === messageContent.author ? "you" : "other"}>
+                    <div>
+                        <div className="message-content">
+                            <p>{messageContent.message}</p>
+                        </div>
+                        <div className="message-meta">
+                        <p id='time'>{messageContent.time}</p>
+                        <p id='author'>{messageContent.author}</p>
+                        </div>
+                    </div>
+                </div>
+            })}
             </div>
             <div className='chat-footer'>
                 <input 
                     type="text"  
-                    onChange={(event) => { setCurrentMessage(event.target.value)}}/>
+                    onChange={(event) => { 
+                        setCurrentMessage(event.target.value)
+                    }}
+                    onKeyPress={(event) =>{
+                        event.key === "Enter" && sendMessage()
+                    }}
+                />
                 <button onClick={sendMessage}>&#9658;</button>
             </div>
         </div>
