@@ -10,9 +10,18 @@ const App: React.FC = () => {
   const[showChat, setShowChat] = useState(false);
 
   const login = () => {
-    if(username !== ''){
-      socket.emit('log_in', username)
+    if(username !== '') {
+      socket.emit('log_in', username);
       setShowChat(true);
+    }
+  };
+
+  const logout = () => {
+    if(username !== '') {
+      socket.emit('log_out', username);
+      // socket.disconnect();
+      setShowChat(false);
+      setUsername('');
     }
   };
 
@@ -32,12 +41,12 @@ const App: React.FC = () => {
               event.key === 'Enter' && login()
             }}
           />
-          <button onClick={login} >Login</button>
+          <button onClick={login} >Log in</button>
         </div>
         ):(
           <div>
             <p>Hello {username}</p>
-            <button>Log  out</button>
+            <button onClick={logout}>Log out</button>
             <p />
             <Chat socket={socket} username={username} />
           </div> 

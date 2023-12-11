@@ -27,6 +27,10 @@ io.on('connection', (socket) => {
     socket.broadcast.emit("receive_message", data)
   });
 
+  socket.on("log_out", (data)=>{
+    console.log(`USER ${data} with ID ${socket.id} logged out`);
+  })
+
   socket.on("disconnect", ()=> {
     console.log("User Disconnected", socket.id)
   });
