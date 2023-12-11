@@ -1,6 +1,5 @@
 import cors from 'cors';
 import express from 'express';
-import fs from 'fs';
 import http from 'http';
 import { Server } from 'socket.io';
 
@@ -17,7 +16,6 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  // console.log(`User ${socket.id} connected`);
   socket.on("log_in", (data)=>{
     console.log(`USER ${data} with ID ${socket.id} logged in`);
   })
@@ -31,6 +29,7 @@ io.on('connection', (socket) => {
     console.log(`USER ${data} with ID ${socket.id} logged out`);
   })
 
+  //the library's internal handling of disconnections
   socket.on("disconnect", ()=> {
     console.log("User Disconnected", socket.id)
   });

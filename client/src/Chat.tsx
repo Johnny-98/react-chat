@@ -32,6 +32,8 @@ function Chat({socket, username}:chatType) {
         }
     };
 
+    // The messageListener is added as a dependency to useEffect to ensure it's recreated only when necessary
+    // Tldr: messages don't repeat
     const messageListener = useMemo(() => {
         const listener = (data: Message) => {
             //get the current message and add it to an array 
@@ -44,7 +46,7 @@ function Chat({socket, username}:chatType) {
         socket.on('receive_message', messageListener);
 
         return () => {
-            // Clean up socket listener when component unmounts
+            // Clean up socket listener when component unmounts to prevent memory leaks.
             socket.off('receive_message', messageListener);
         };
     }, [socket, messageListener]);
