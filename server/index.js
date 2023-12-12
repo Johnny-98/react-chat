@@ -6,6 +6,10 @@ import { Server } from 'socket.io';
 const app = express();
 const server = http.createServer(app);
 
+//server holds user and chat info
+const users = []; 
+const chathistory = [];
+
 app.use(cors());
 
 const io = new Server(server, {
@@ -16,20 +20,26 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  socket.on("log_in", (data)=>{
-    console.log(`USER ${data} with ID ${socket.id} logged in`);
+
+  socket.on("log_in", (data)=> {
+    if (users.includes(data)) {
+      socket.emit('logged_in', `Welcome back, ${data}!`);
+    } else {
+      socket.emit('logged_in',  `${data} logged in`);
+      users.push(data); // Store the new username
+    }
+    socket.emit('chat_history', chathistory);
   })
 
   socket.on("send_message", (data) => {
-    //broadcast to everyone on the network 
-    socket.broadcast.emit("receive_message", data)
+    chathistory.push(data);
+    socket.broadcast.emit('chat_history', chathistory);
   });
 
   socket.on("log_out", (data)=>{
     console.log(`USER ${data} with ID ${socket.id} logged out`);
   })
 
-  //the library's internal handling of disconnections
   socket.on("disconnect", ()=> {
     console.log("User Disconnected", socket.id)
   });
