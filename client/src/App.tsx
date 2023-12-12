@@ -22,6 +22,7 @@ const App: React.FC = () => {
     if(username !== '') {
       socket.emit('log_in', username);
       setShowChat(true);
+      localStorage.setItem('username', username);
     }
   };
 
@@ -30,18 +31,37 @@ const App: React.FC = () => {
       socket.emit('log_out', username);
       setShowChat(false);
       setUsername('');
+      localStorage.removeItem('username');
     }
   };
 
+  // Get a simple message from the server depending if new user or not
   useEffect(() => {
     socket.on('logged_in', setLoginMessage);
   }, [socket]);
 
+
+  //browser remembers users who logged in
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('username');
+    const savedChatHistory = localStorage.getItem('chatHistory');
+    if (savedUsername) {
+      setUsername(savedUsername);
+      setShowChat(true);
+    }
+    //when reloading chat history dissapears so storing in localStorage is needed
+    // this isn't ideal but chat is saved in-memory 
+    if (savedChatHistory) {
+      setChatHistory(JSON.parse(savedChatHistory));
+    }
+  }, []);
+
   useEffect(() => {
     socket.on('chat_history', (history: Message[]) => {
         setChatHistory(history);
+        localStorage.setItem('chatHistory', JSON.stringify(history));
     });
-}, [socket]);
+  }, [socket]);
 
   return (
     <div className='App'>
