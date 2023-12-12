@@ -6,6 +6,7 @@ interface chatType {
     username: string; 
 }
 interface Message {
+    key: string;
     author: string
     message: string;
     time: string
@@ -18,6 +19,7 @@ function Chat({socket, username}:chatType) {
     const sendMessage = async () => {
         if(currentMessage!== '') {
             const messageData = {
+                key: uuidv4(),
                 author: username,
                 message: currentMessage,
                 time: 
