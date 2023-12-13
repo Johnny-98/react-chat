@@ -20,22 +20,35 @@ const io = new Server(server, {
     }
 });
 
-// Add an endpoint to handle message editing
+//handle message editing
 app.put('/api/test/edit_message', (req, res) => {
   const { messageId, newMessage } = req.body;
   const index = chathistory.findIndex((message) => message.key === messageId);
   if (index !== -1) {
-      chathistory[index].message = newMessage;
-      // Emit updated chat history to all clients
-      io.emit('chat_history', chathistory);
-      res.status(200).send(chathistory[index]); // Sending the updated message back to the client
+    chathistory[index].message = newMessage;
+    // Emit updated chat history to all clients
+    io.emit('chat_history', chathistory);
+    res.status(200).send(chathistory[index]); // Sending the updated message back to the client
   } else {
       res.status(404).send('Message not found');
   }
 });
 
-io.on('connection', (socket) => {
+// handle message removal
+app.delete('/api/test/delete_message', (req, res) => {
+  const { messageId } = req.body;
+  const index = chathistory.findIndex((message) => message.key === messageId);
+  if (index !== -1) {
+    const deletedMessage = chathistory.splice(index, 1)[0]; // Remove the message from the chat history
+    io.emit('message_deleted', deletedMessage); // Emit event notifying about message deletion
+    res.status(200).send(deletedMessage);
+  } else {
+    res.status(404).send('Message not found');
+  }
+});
 
+io.on('connection', (socket) => {
+  
   socket.on("log_in", (data)=> {
     if (users.includes(data)) {
       socket.emit('logged_in', `back ${data}!`);
@@ -59,7 +72,16 @@ io.on('connection', (socket) => {
         chathistory[index].message = newMessage;
         io.emit('updated_message', chathistory[index]); // Emit the updated message
     }
-});
+  });
+
+  socket.on("delete_message", (data) => {
+    const { messageId } = data;
+    const index = chathistory.findIndex((message) => message.key === messageId);
+    if (index !== -1) {
+      const deletedMessage = chathistory.splice(index, 1)[0]; // Remove the message from the chat history
+      io.emit('message_deleted', deletedMessage); // Emit event notifying about message deletion
+    }
+  });
 
   socket.on("log_out", (data)=>{
     //console.log(`USER ${data} with ID ${socket.id} logged out`);

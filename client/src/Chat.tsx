@@ -36,10 +36,14 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
     };
 
     useEffect(() => {
-        // Retrieve chat history from local storage when component mounts
+        // Retrieve chat history from local storage
         // it could return null if the key doesn't exist in the storage
         const storedChatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-        setChatHistory(storedChatHistory);
+
+        // prevent the deleted messages from reappearing upon refresh
+        if (storedChatHistory && storedChatHistory.length > 0) {
+            setChatHistory(storedChatHistory);
+        }
     }, [setChatHistory]); //Ensure that setChatHistory is not recreated on every render
 
     useEffect(() => {
@@ -75,14 +79,39 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
                     return message;
                 });
             });
-            // Emit an event to the server indicating message edit
-            socket.emit('edit_message', updatedMessage);                
+            socket.emit('edit_message', updatedMessage); // Notify server about message edit           
         })
         .catch((error) => {
             // Handle error during message edit
             console.error('Error editing message:', error);
         });
     };
+
+    // const deleteMessage;
+    const deleteMessage = (messageId: string) => {
+        axios.delete('http://localhost:3001/api/test/delete_message', { data: { messageId } })
+        .then((response) => {
+            const deletedMessage = response.data;
+            setChatHistory((prevChatHistory: Message[]) =>
+                prevChatHistory.filter((message) => message.key !== deletedMessage.key)
+            );
+            // Remove deleted message from local storage 
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory.filter((message) => message.key !== deletedMessage.key)));
+        
+            socket.emit('delete_message', { messageId }); // Notify server about message deletion
+        })
+        .catch((error) => {
+        console.error('Error deleting message:', error);
+        });
+    };
+
+    useEffect(() => {
+        socket.on('message_deleted', (deletedMessage: Message) => {
+            setChatHistory((prevChatHistory: Message[]) =>
+                prevChatHistory.filter((message) => message.key !== deletedMessage.key)
+            );
+        });
+    });
 
 
     return (
@@ -102,7 +131,8 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
                                 <p id='time'>{messageContent.time}</p>
                                 <p id='author'>{messageContent.author}</p>
                                 </div>
-                                <button onClick={() => { console.log('Button clicked!'); editMessage(messageContent.key, 'New message'); }}>TESTING</button>
+                                <button onClick={() => { editMessage(messageContent.key, 'New message'); }}>Update</button>
+                                <button onClick={() => { deleteMessage(messageContent.key); }}>Delete</button>
                             </div>
                         </div>
                     })}
