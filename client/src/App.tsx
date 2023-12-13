@@ -21,7 +21,6 @@ const App: React.FC = () => {
   const login = () => {
     if(username !== '') {
       socket.emit('log_in', username);
-      setShowChat(true);
       localStorage.setItem('username', username);
     }
   };
@@ -35,9 +34,18 @@ const App: React.FC = () => {
     }
   };
 
-  // Get a simple message from the server depending if new user or not
+  // login check
   useEffect(() => {
-    socket.on('logged_in', setLoginMessage);
+    socket.on('logged_in', (message: string) => {
+      setLoginMessage(message);
+      setShowChat(true); // Show the chat when the user is logged in
+    });
+
+    socket.on('users_update', (usersArray: string[]) => {
+      if (usersArray.length === 0) {
+        setShowChat(false); // Hide the chat when the users array is empty
+      }
+    });
   }, [socket]);
 
 

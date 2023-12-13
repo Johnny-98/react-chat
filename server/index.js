@@ -48,7 +48,7 @@ app.delete('/api/test/delete_message', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  
+
   socket.on("log_in", (data)=> {
     if (users.includes(data)) {
       socket.emit('logged_in', `back ${data}!`);
@@ -57,6 +57,8 @@ io.on('connection', (socket) => {
       users.push(data); // Store the new username
     }
     socket.emit('chat_history', chathistory);
+    // Whenever users array changes, emit 'users_update'
+    io.emit('users_update', users);
   })
 
   socket.on("send_message", (data) => {
