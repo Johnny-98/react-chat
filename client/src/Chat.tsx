@@ -40,9 +40,10 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
         // it could return null if the key doesn't exist in the storage
         const storedChatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
         setChatHistory(storedChatHistory);
-    }, [setChatHistory]);
+    }, [setChatHistory]); //Ensure that setChatHistory is not recreated on every render
 
     useEffect(() => {
+        // Listen for updated_message event
         socket.on('updated_message', (updatedMessage: Message) => {
             setChatHistory((prevChatHistory: Message[]) => {
                 const updatedChatHistory = prevChatHistory.map((message) => {
@@ -51,7 +52,7 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
                     }
                     return message;
                 });
-                return updatedChatHistory;
+                return updatedChatHistory; // Update the chat history with the updated message
             });
         });
         
@@ -61,6 +62,7 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
     }, [socket, setChatHistory]);
 
     const editMessage = (messageId: string, newMessage: string) => {
+        //specify the full server endpoint to avoid confusion 
         axios.put('http://localhost:3001/api/test/edit_message', { messageId, newMessage })
         .then((response) => {
             // Handle successful message edit
@@ -124,4 +126,5 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
     );
 }
 
+//helps to memoize the component and prevent unnecessary re-renders if its props remain the same.
 export default React.memo(Chat);

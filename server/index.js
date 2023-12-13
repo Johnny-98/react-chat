@@ -20,6 +20,7 @@ const io = new Server(server, {
     }
 });
 
+// Add an endpoint to handle message editing
 app.put('/api/test/edit_message', (req, res) => {
   const { messageId, newMessage } = req.body;
   const index = chathistory.findIndex((message) => message.key === messageId);
@@ -53,6 +54,7 @@ io.on('connection', (socket) => {
   socket.on("edit_message", (data) => {
     const { messageId, newMessage } = data;
     const index = chathistory.findIndex((message) => message.key === messageId);
+    // js conventional way to determine if the element exists in the array or not
     if (index !== -1) {
         chathistory[index].message = newMessage;
         io.emit('updated_message', chathistory[index]); // Emit the updated message
