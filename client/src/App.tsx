@@ -86,7 +86,7 @@ const App: React.FC = () => {
             <p>Welcome {loginMessage || ('back ' + username + '!')}</p>
             <button onClick={logout}>Log out</button>
             <p />
-            <Chat socket={socket} username={username} chatHistory={chatHistory} /> 
+            <Chat socket={socket} username={username} chatHistory={chatHistory} setChatHistory={setChatHistory} /> 
           </div> 
       )}
     </div>

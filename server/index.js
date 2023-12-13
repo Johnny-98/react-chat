@@ -11,12 +11,26 @@ const users = [];
 const chathistory = [];
 
 app.use(cors());
+app.use(express.json()); // Parse JSON requests
 
 const io = new Server(server, {
     cors:{
         origin: "http://localhost:3000",
         methods: ["GET", "POST"]
     }
+});
+
+app.put('/api/test/edit_message', (req, res) => {
+  const { messageId, newMessage } = req.body;
+  const index = chathistory.findIndex((message) => message.key === messageId);
+  if (index !== -1) {
+      chathistory[index].message = newMessage;
+      // Emit updated chat history to all clients
+      io.emit('chat_history', chathistory);
+      res.status(200).send(chathistory[index]); // Sending the updated message back to the client
+  } else {
+      res.status(404).send('Message not found');
+  }
 });
 
 io.on('connection', (socket) => {
@@ -35,6 +49,15 @@ io.on('connection', (socket) => {
     chathistory.push(data);
     socket.broadcast.emit('chat_history', chathistory);
   });
+
+  socket.on("edit_message", (data) => {
+    const { messageId, newMessage } = data;
+    const index = chathistory.findIndex((message) => message.key === messageId);
+    if (index !== -1) {
+        chathistory[index].message = newMessage;
+        io.emit('updated_message', chathistory[index]); // Emit the updated message
+    }
+});
 
   socket.on("log_out", (data)=>{
     //console.log(`USER ${data} with ID ${socket.id} logged out`);
