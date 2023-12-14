@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Button, Card, Container } from 'react-bootstrap';
 import * as io from 'socket.io-client';
 import { Socket } from 'socket.io-client';
 import './App.css';
@@ -92,12 +93,15 @@ const App: React.FC = () => {
           <button onClick={login} >Log in</button>
         </div>
         ):(
-          <div>
-            <p>Welcome {loginMessage || ('back ' + username + '!')}</p>
-            <button onClick={logout}>Log out</button>
-            <p />
-            <Chat socket={socket} username={username} chatHistory={chatHistory} setChatHistory={setChatHistory} /> 
-          </div> 
+          <Container className="mt-4 chat-window">
+            <Card>
+              <Card.Header className='chat-header d-flex justify-content-between align-items-center'>
+                <h5>Welcome {loginMessage || ('back ' + username + '!')}</h5>
+                <Button className='logout-button' variant="warning" onClick={logout}><b>Log out</b></Button>
+              </Card.Header>
+              <Chat socket={socket} username={username} chatHistory={chatHistory} setChatHistory={setChatHistory}/> 
+            </Card>
+          </Container>
       )}
     </div>
   );
