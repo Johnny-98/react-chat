@@ -8,7 +8,8 @@ export interface Message {
   key: string;
   author: string
   message: string;
-  time: string
+  time: string;
+  updated: boolean;
 }
 
 const App: React.FC = () => {

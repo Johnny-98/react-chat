@@ -22,10 +22,11 @@ const io = new Server(server, {
 
 //handle message editing
 app.put('/api/test/edit_message', (req, res) => {
-  const { messageId, newMessage } = req.body;
+  const { messageId, newMessage, updated } = req.body;
   const index = chathistory.findIndex((message) => message.key === messageId);
   if (index !== -1) {
     chathistory[index].message = newMessage;
+    chathistory[index].updated = updated;
     // Emit updated chat history to all clients
     io.emit('chat_history', chathistory);
     res.status(200).send(chathistory[index]); // Sending the updated message back to the client

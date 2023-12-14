@@ -15,6 +15,9 @@ interface chatType {
 
 function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
     const [currentMessage, setCurrentMessage] = useState('');
+    const [newMessage, setNewMessage] = useState('');
+    let [toggleEdit, setToggleEdit] = useState(false);
+    const [editMessageId, setEditMessageId] = useState<string>('');
 
     const sendMessage = () => {
         if(currentMessage!== '') {
@@ -25,7 +28,8 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
                 time: 
                     new Date(Date.now()).getHours() +
                     ':' + 
-                    new Date(Date.now()).getMinutes()
+                    new Date(Date.now()).getMinutes(),
+                updated: false
             };
             socket.emit('send_message', messageData );
             // Update local chat history
@@ -67,7 +71,7 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
 
     const editMessage = (messageId: string, newMessage: string) => {
         //specify the full server endpoint to avoid confusion 
-        axios.put('http://localhost:3001/api/test/edit_message', { messageId, newMessage })
+        axios.put('http://localhost:3001/api/test/edit_message', { messageId, newMessage, updated: true })
         .then((response) => {
             // Handle successful message edit
             const updatedMessage = response.data;
@@ -88,6 +92,7 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
     };
 
     // const deleteMessage;
+
     const deleteMessage = (messageId: string) => {
         axios.delete('http://localhost:3001/api/test/delete_message', { data: { messageId } })
         .then((response) => {
@@ -133,25 +138,26 @@ function Chat({socket, username, chatHistory, setChatHistory}:chatType) {
                                 </div>
                                 <button onClick={() => { editMessage(messageContent.key, 'New message'); }}>Update</button>
                                 <button onClick={() => { deleteMessage(messageContent.key); }}>Delete</button>
+                                <p>{messageContent.updated?'updated': ''}</p>
                             </div>
                         </div>
                     })}
                 </ScrollToBottom>
             </div>
-            <div className='chat-footer'>
-                <input 
-                    type='text'  
-                    placeholder='Type your message here...'
-                    value={currentMessage}
-                    onChange={(event) => { 
-                        setCurrentMessage(event.target.value)
-                    }}
-                    onKeyDown={(event) =>{
-                        event.key === 'Enter' && sendMessage()
-                    }}
-                />
-                <button onClick={sendMessage}>&#9658;</button>
-            </div>
+                <div className='chat-footer'>
+                    <input 
+                        type='text'  
+                        placeholder='Type your message here...'
+                        value={currentMessage}
+                        onChange={(event) => { 
+                            setCurrentMessage(event.target.value)
+                        }}
+                        onKeyDown={(event) =>{
+                            event.key === 'Enter' && sendMessage()
+                        }}
+                    />
+                    <button onClick={sendMessage}>&#9658;</button>
+                </div>
         </div>
     );
 }
