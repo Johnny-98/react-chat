@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Container } from 'react-bootstrap';
 import * as io from 'socket.io-client';
 import { Socket } from 'socket.io-client';
-import './App.css';
 import Chat from './Chat';
+import './styles/App.css';
+import './styles/login.css';
 
 export interface Message {
   key: string;
@@ -74,37 +75,51 @@ const App: React.FC = () => {
     });
   }, [socket]);
 
-  return (
-    <div className='App'>
-      {!showChat ? (
-        <div className='joinChatContainer'>
-          <h3>Join chat</h3>
-          <input 
-            type='text'  
-            placeholder='type username' 
-            //accessing value of input
-            onChange={(event) => {
-              setUsername(event.target.value)
-            }}
-            onKeyDown={(event) => {
-              event.key === 'Enter' && login()
-            }}
-          />
-          <button onClick={login} >Log in</button>
+return (
+  <div>
+    {!showChat ? (
+      <div className="app-background">
+        <div className=" background">
+          <div className="form-card">
+            <h1 className="form-title">
+                Welcome 🐶
+            </h1>
+            <div className="form-subtitle">
+              Select your username to get started
+            </div>
+            <div className="auth">
+                <div className="auth-label">Username</div>
+                <div>
+                <input 
+                  className="auth-input" 
+                  name="username" 
+                  type='text'  
+                  placeholder='type username' 
+                  onChange={(event) => {
+                    setUsername(event.target.value)
+                  }}
+                  onKeyDown={(event) => {
+                    event.key === 'Enter' && login()
+                  }}/>
+                </div>
+                <button className="auth-button" type="submit" onClick={login}>Authenticate</button>
+            </div>
+          </div>
         </div>
-        ):(
-          <Container className="mt-4 chat-window">
-            <Card>
-              <Card.Header className='chat-header d-flex justify-content-between align-items-center'>
-                <h5>Welcome {loginMessage || ('back ' + username + '!')}</h5>
-                <Button className='logout-button' variant="warning" onClick={logout}><b>Log out</b></Button>
-              </Card.Header>
-              <Chat socket={socket} username={username} chatHistory={chatHistory} setChatHistory={setChatHistory}/> 
-            </Card>
-          </Container>
-      )}
-    </div>
-  );
+      </div>
+      ):(
+        <Container className="mt-4 chat-window">
+          <Card>
+            <Card.Header className='chat-header d-flex justify-content-between align-items-center'>
+              <h5>Welcome {loginMessage || ('back ' + username + '!')}</h5>
+              <Button className='logout-button' variant="success" onClick={logout}><b>Log out</b></Button>
+            </Card.Header>
+            <Chat socket={socket} username={username} chatHistory={chatHistory} setChatHistory={setChatHistory}/> 
+          </Card>
+        </Container>
+    )}
+  </div>
+);
 }
 
 export default App;

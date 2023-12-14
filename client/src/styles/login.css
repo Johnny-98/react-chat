@@ -1,0 +1,76 @@
+.app-background {
+    background-image: url('valley.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+}
+
+.background {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(75deg, rgb(40,43,54) 0%, rgb(48, 52, 68) 50%, rgba(69, 76, 99, 0.8) 100%);
+    /* Vertical center */
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.form-card {
+    /* width: 90%; */
+    padding: 0% 25% 0% 25%;
+}
+
+.form-title { 
+    font-size: 42px; 
+    font-weight: 800; 
+    letter-spacing: 0.5px; 
+    color: #e8e8e8; 
+    padding-bottom: 12px; 
+}
+
+.form-subtitle {
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    color: #afafaf;
+    padding-bottom: 24px;
+}
+
+.auth {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    padding-bottom: 12px;
+}
+.auth-label {
+    position: absolute;
+    top: 8px;
+    left: 18px;
+    font-size: 11px;
+    color: rgb(175, 175, 175);
+    width: 100px;
+}
+.auth-input {
+    width: 900px;
+    background-color: #3e404b;
+    color: white;
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    padding: 24px 18px 12px 18px;
+    margin-bottom: 12px;
+}
+.auth-button {
+    width: 900px;
+    height: 53px;
+    color: white;
+    background-color: #198754;;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .44s ease;
+    -webkit-transition: all .44s ease;
+    -moz-transition: all .44s ease;
+}
+.auth-button:hover { filter: brightness(145%); }
