@@ -1,9 +1,12 @@
 import axios from 'axios';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Button, Card, Dropdown, Form, InputGroup } from 'react-bootstrap';
+import { TbDotsVertical } from "react-icons/tb";
 import ScrollToBottom from 'react-scroll-to-bottom';
 import { Socket } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from './App';
+
 interface chatType {
     socket: Socket;
     username: string;
@@ -116,65 +119,85 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
         });
     });
 
+    const RxHamburgerMenu = <TbDotsVertical />;
+    
+
     return (
-        <div className='chat-window'>
-            <div className='chat-header'>
-                <p>Live chat</p>
-            </div>
-            <div className='chat-body'>
+        <div>
+            <Card.Body className='chat-body'>
                 <ScrollToBottom className='message-container'>
                     {chatHistory.map((messageContent) => (
-                        <div key={messageContent.key} className='message' id={username === messageContent.author ? 'you' : 'other'}>
-                            <div>
+                        <div key={messageContent.key} className="message-wrapper" >
+                            <div id={username === messageContent.author ? 'you' : 'other'}>
+                                
                                 <div className='message-content'>
-                                    <p>{messageContent.message}</p>
+                                    <div className="message-box">
+                                        <p>{messageContent.message}</p>
+                                    </div>
+                                    <div className='pt-2'>
+                                        <Dropdown>
+                                            <Dropdown.Toggle variant="light" id="dropdown-basic" className="custom-dropdown-toggle">
+                                                {RxHamburgerMenu}
+                                            </Dropdown.Toggle>
+
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item
+                                                    onClick={() => {
+                                                        setUpdateMessage('');
+                                                        setSelectedMessageKey(messageContent.key); // Store the key of the message being edited
+                                                        setIsEditing(!isEditing);}}>
+                                                            Edit
+                                                </Dropdown.Item>
+                                                <Dropdown.Item
+                                                    onClick={() => deleteMessage(messageContent.key)}>
+                                                        Delete
+                                                </Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </div>
                                 </div>
-                                <div className='message-meta'>
-                                <p id='time'>{messageContent.time}</p>
-                                <p id='author'>{messageContent.author}</p>
+                                <div className="message-info">
+                                    <p><b>{messageContent.author}</b>, { messageContent.updated && 'updated' } {messageContent.time}</p>
                                 </div>
-                                <p>{messageContent.updated?'updated': ''}</p>
-                            </div>
-                            <div className='edit-button-container'>
-                                <button onClick={() => {
-                                    setUpdateMessage('');
-                                    setSelectedMessageKey(messageContent.key); // Store the key of the message being edited
-                                    setIsEditing(true);
-                                }}>Edit</button>
-                                <button onClick={() => deleteMessage(messageContent.key)}>Delete</button>
-                                <p>{messageContent.updated ? 'updated' : ''}</p>
                             </div>
                         </div>
                     ))}
                 </ScrollToBottom>
-            </div>
-            {isEditing ? (
-                <div className='chat-footer'>
-                    <input
-                        type='text'
-                        placeholder='Update message...'
-                        value={updateMessage}
-                        onChange={(event) => setUpdateMessage(event.target.value)}
-                        onKeyDown={(event) => {
-                            event.key === 'Enter' && editMessage(selectedMessageKey, updateMessage);
-                        }}
-                    />
-                    <button onClick={() => editMessage(selectedMessageKey, updateMessage)}>Confirm</button>
-                </div>
-                ):(
-                <div className='chat-footer'>
-                    <input
-                        type='text'
-                        placeholder='Type your message here...'
-                        value={currentMessage}
-                        onChange={(event) => setCurrentMessage(event.target.value)}
-                        onKeyDown={(event) => {
-                            event.key === 'Enter' && sendMessage();
-                        }}
-                    />
-                    <button onClick={sendMessage}>&#9658;</button>
-                </div>
-            )}
+            </Card.Body>
+            <Card.Footer>
+                {isEditing ? ( 
+                    <div className='footer-content'>
+                        <InputGroup>
+                            <Form.Control
+                                type='text'
+                                placeholder='Press ESC to cansel...'
+                                value={updateMessage}
+                                onChange={(event) => setUpdateMessage(event.target.value)}
+                                onKeyDown={(event) => {
+                                    event.key === 'Enter' && editMessage(selectedMessageKey, updateMessage);
+                                    event.key === 'Escape' && setIsEditing(false);
+                                }}
+                            />
+                        </InputGroup>
+                        <Button onClick={() => editMessage(selectedMessageKey, updateMessage)}>Edit</Button>
+                    </div>
+                    ):(
+                    <div className='footer-content'>
+                        <InputGroup>
+                            <Form.Control
+                                type='text'
+                                placeholder='Type your message here...'
+                                value={currentMessage}
+                                onChange={(event) => setCurrentMessage(event.target.value)}
+                                onKeyDown={(event) => {
+                                    event.key === 'Enter' && sendMessage();
+                                }}
+                            />
+                        </InputGroup>
+                        <Button onClick={sendMessage}>Send</Button>
+                    </div>
+                )}   
+            </Card.Footer>
         </div>
     );
 }
