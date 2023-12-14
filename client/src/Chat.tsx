@@ -28,7 +28,7 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
                 key: uuidv4(),
                 author: username,
                 message: currentMessage,
-                time: new Date(Date.now()).toLocaleTimeString(),
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 updated: false
             };
             socket.emit('send_message', messageData );
@@ -40,16 +40,16 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
     };
 
     const editMessage = (messageId: string, newMessage: string) => {
+        const editedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Get current time
         axios
-            //specify the full server endpoint to avoid confusion 
-            .put('http://localhost:3001/api/test/edit_message', { messageId, newMessage, updated: true })
+            .put('http://localhost:3001/api/test/edit_message', { messageId, newMessage, updated: true, time: editedTime }) // Include edited time in the request
             .then((response) => {
                 // Handle successful message edit
                 const updatedMessage = response.data;
                 setChatHistory((prevChatHistory: Message[]) => {
                     return prevChatHistory.map((message) => {
                         if (message.key === updatedMessage.key) {
-                            return updatedMessage;
+                            return { ...updatedMessage, time: editedTime }; // Update time property
                         }
                         return message;
                     });
@@ -63,7 +63,7 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
             .catch((error) => {
                 console.error('Error editing message:', error);
             });
-    };
+    };  
 
     const deleteMessage = (messageId: string) => {
         axios
