@@ -10,6 +10,7 @@ export interface Message {
   message: string;
   time: string;
   updated: boolean;
+  isEditing?: boolean;
 }
 
 const App: React.FC = () => {
