@@ -85,7 +85,7 @@ return (
                 Welcome 🐶
             </h1>
             <div className="form-subtitle">
-              Select your username to get started
+              Enter your name to get started
             </div>
             <div className="auth">
                 <div className="auth-label">Username</div>
@@ -102,7 +102,7 @@ return (
                     event.key === 'Enter' && login()
                   }}/>
                 </div>
-                <button className="auth-button" type="submit" onClick={login}>Authenticate</button>
+                <button className="auth-button" type="submit" onClick={login}>Enter</button>
             </div>
           </div>
         </div>
