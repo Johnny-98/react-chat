@@ -144,7 +144,7 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
                                         <Dropdown.Menu>
                                             <Dropdown.Item
                                                 onClick={() => {
-                                                        setUpdateMessage('');
+                                                    setUpdateMessage(messageContent.message);
                                                     setSelectedMessageKey(messageContent.key); // Store the key of the message being edited
                                                     setIsEditing(!isEditing);}}>
                                                         Edit
