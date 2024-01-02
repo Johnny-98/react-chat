@@ -56,7 +56,7 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
                 });
                 socket.emit('edit_message', updatedMessage); // Notify server about message edit
                 // Clear updateMessage and reset editing state
-                setUpdateMessage('');
+                setUpdateMessage(''); 
                 setSelectedMessageKey('');
                 setIsEditing(false);
             })
@@ -134,27 +134,30 @@ function Chat({ socket, username, chatHistory, setChatHistory }: chatType) {
                                     <div className="message-box">
                                         <p>{messageContent.message}</p>
                                     </div>
-                                    <div className='pt-2'>
-                                        <Dropdown>
-                                            <Dropdown.Toggle variant="light" id="dropdown-basic" className="custom-dropdown-toggle">
-                                                {RxHamburgerMenu}
-                                            </Dropdown.Toggle>
+                                    {username === messageContent.author &&
+                                    <div className='pt-2'> 
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="light" id="dropdown-basic" className="custom-dropdown-toggle">
+                                            {RxHamburgerMenu}
+                                        </Dropdown.Toggle>
 
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item
-                                                    onClick={() => {
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item
+                                                onClick={() => {
                                                         setUpdateMessage('');
-                                                        setSelectedMessageKey(messageContent.key); // Store the key of the message being edited
-                                                        setIsEditing(!isEditing);}}>
-                                                            Edit
-                                                </Dropdown.Item>
-                                                <Dropdown.Item
-                                                    onClick={() => deleteMessage(messageContent.key)}>
-                                                        Delete
-                                                </Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                                                    setSelectedMessageKey(messageContent.key); // Store the key of the message being edited
+                                                    setIsEditing(!isEditing);}}>
+                                                        Edit
+                                            </Dropdown.Item>
+                                            <Dropdown.Item
+                                                onClick={() => deleteMessage(messageContent.key)}>
+                                                    Delete
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                     </div>
+                                    }
+                                    
                                 </div>
                                 <div className="message-info">
                                     <p><b>{messageContent.author}</b>, { messageContent.updated && 'updated' } {messageContent.time}</p>
