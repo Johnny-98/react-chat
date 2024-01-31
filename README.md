@@ -1,8 +1,7 @@
 Cyberpunk inspired app with Login and Register authentication.<br>
 Two pages 'Log in/Register' for the authentication and the page to list users with role based access.<br>
 ![Screenshot 2024-01-31 215645](https://github.com/Johnny-98/react-chat/assets/29556692/2feb018b-010c-417b-a0a9-004376e9697a)
-
-<br> <br>
+<br>
 Role based access (admin, super_user, user):<br>
 1 Only an admin can see the ip_address field.<br>
 2 An admin and a super_user can see the email field.<br>
